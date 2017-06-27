@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
 import re
+import bcrypt
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 class UserManager(models.Manager):
     def login(self, email, password):
@@ -8,7 +9,9 @@ class UserManager(models.Manager):
         success = "Successful Login"
         user = User.objects.filter(email = email)
         if User.objects.filter(email = email).exists():
-            if User.objects.filter(email=email, password=password).exists():
+            db_hashed = User.objects.get(email = email).password
+            if db_hashed == bcrypt.hashpw(password.encode(), db_hashed.encode()):
+            # if User.objects.filter(email=email, password=password).exists():
                 return {"status": True, "data": user}
             else: 
                 errors.append("Incorrect Password")
@@ -22,6 +25,7 @@ class UserManager(models.Manager):
             
         errors = []
         user = first_name
+        
         if len(email) < 1 or len(first_name) < 1 or len(last_name) < 1:
             errors.append("Please Complete The Form")
         
@@ -35,9 +39,9 @@ class UserManager(models.Manager):
 
         if password != password2:
             errors.append("Passwords do not match")
-          
+        hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt())  
         if not errors:
-            user = User.objects.create(first_name = first_name, last_name = last_name, email=email,password=password)
+            user = User.objects.create(first_name = first_name, last_name = last_name, email=email,password=hashed_pw)
             return {"status": True, "data": user}
         else:
             return {"status": False, "data": errors}
