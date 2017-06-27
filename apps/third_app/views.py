@@ -10,51 +10,38 @@ EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 
 def index(request):
-        
-        # User.objects.all().delete()
-
         return render(request, "third_app/index.html")
 
-def login(request):
-        
-        if request.method =="POST":
-                
-                login = User.objects.login(request.POST['email'], request.POST['password'])
-        
-        if login['status']:
-            
-            success = login['data']
-        #     messages.error(request, success[0])
-            user = User.objects.get(email = request.POST['email'])
-            request.session['id'] = user.id
-            return redirect('/newuser')
-
-        else:
-            error = login['data']
-            messages.success(request, error[0])
-            return redirect('/')
 def newuser(request):
-        context = {
-                "name2" : User.objects.get(id = request.session['id'])
-        }
+        if 'id' in request.session:
+                context = {
+                        "user" : User.objects.get(id = request.session['id'])
+                }
+                return render(request, "third_app/newuser.html", context)
+        return redirect('/')
 
-        return render(request, "third_app/newuser.html", context)
+
+def login(request):
+        if request.method =="POST":
+                login = User.objects.login(request.POST)
+                if login['status']:                
+                        request.session['id'] = login['data'].id
+                        return redirect('/newuser')
+                else:
+                        messages.error(request, "Email or password invalid")
+        return redirect('/')        
+
 def val(request):
         if request.method == "POST":
-                
-                res = User.objects.val(request.POST['first_name'], request.POST['last_name'], request.POST['email'], request.POST['password'], request.POST['password2'])
-
-        if res['status']:
-            
-            username = res['data'].first_name
-            messages.success(request, "Thank You For Registering")
-            user = User.objects.get(email = request.POST['email'])
-            request.session['id'] = user.id
-            return redirect('/newuser')
-        else:
-            for errors in res['data']:
-                messages.error(request, errors)
-            return redirect('/')
+                res = User.objects.val(request.POST)
+                if res['status']:
+                        messages.success(request, "Thank You For Registering")
+                        request.session['id'] = res['data'].id
+                        return redirect('/newuser')
+                else:
+                        for errors in res['data']:
+                                messages.error(request, errors)
+        return redirect('/')
         
      
         
