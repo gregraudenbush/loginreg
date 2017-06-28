@@ -1,6 +1,6 @@
 
 from django.shortcuts import render, HttpResponse, redirect
-from .models import User
+from .models import User, Poke
 from django.contrib import messages
 import bcrypt
 
@@ -10,14 +10,23 @@ EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 
 def index(request):
+        # User.objects.all().delete()
+        Poke.objects.all().delete()
         return render(request, "third_app/index.html")
 
 def newuser(request):
         if 'id' in request.session:
+                # Poke.objects.all().delete()
                 context = {
-                        "user" : User.objects.get(id = request.session['id'])
+                        "user" : User.objects.get(id = request.session['id']), 
+                        "users": User.objects.all(),
+                        "pokes": Poke.objects.all()
+                        
                 }
+                print request.session['id']
                 return render(request, "third_app/newuser.html", context)
+
+                print users
         return redirect('/')
 
 
@@ -43,7 +52,16 @@ def val(request):
                                 messages.error(request, errors)
         return redirect('/')
         
-     
+def poke(request):
+        if request.method == "POST":
+                user = User.objects.get(id = request.session['id'])
+                userpoked = request.POST['userpoked']
+                poke = Poke.objects.create(user = User.objects.get(id = request.session['id']), userpoked = User.objects.get(id = request.POST['userpoked']))
+                return redirect ('/newuser')
+def logout(request):
+        if request.method == "POST":
+                request.session.clear()
+                return redirect ('/')
         
 
 
