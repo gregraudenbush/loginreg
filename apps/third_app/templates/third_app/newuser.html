@@ -21,23 +21,30 @@
             
     <p> Successfully registered (or logged in)!</p>
 
-    <h1> Your Pokes </h1>
-<!--{% if pokes.userpoked.id == user.id %}
-    {% for poke in pokes %}
-    {{ user.first_name}} {{ user.last_name}} poked you {{ user.poke  | length}}
-    {% endfor %}
-    {% endif %}-->
-    There are {{ pokes | length }} pokes
+    <h1> Your Pokes = {{ been_poked | length }}</h1>
+    Who poked you
+        <ul>
+           
+            <!--{% for i in poked_by %}
+                <li>
+                {{ i.poker.first_name }} {{ i.poker.last_name }} {{ i.poker | length }}
+                </li>
+            {% endfor %}
+             -->
+        </ul>    
         <br>
 
-
-
+            {% for x in poked_num %}
+                
+              <li>  {{ x.poker__first_name }} {{ x.poker__last_name }} {{ x.total }}</li>
+            {% endfor %}
+            
     <p>----------</p>
-    {% if pokes.user.id == user.id %}
-        {{ pokes }}
-    {%endif%}
+        <!--{% if pokes.user.id == user.id %}
+            {{ pokes }}
+        {%endif%}-->
 
- <!--{{ pokes | length }}-->
+    <!--{{ pokes | length }}-->
 <table style="width:100%">
   <tr>
     <th>Name</th>
@@ -46,27 +53,22 @@
     <th>Poke History</th>
     <th>Action</th>
   </tr>
-  {% for user2 in users %}
+  {% for user1 in users %}
   <tr>
-    <td>{{ user2.first_name }} {{ user2.last_name }}</td>
-    <td>{{ user2.alias }} </td> 
-    <td>{{ user2.email }}</td>
+    <td>{{ user1.first_name }} {{ user1.last_name }}</td>
+    <td>{{ user1.alias }} </td> 
+    <td>{{ user1.email }}</td>
     <td>
         
-        <!--{% for poke in pokes %}-->
-        <!--{% if pokes.userpoked == user2 %}
-           {{ pokes | length }}
-
-        {% endif %}-->
-        <!--{% endfor %}-->
-        {{ pokes | length }}
+        
+        {{ user1.poked.all | length}}
     </td>
     <td>
         <form action="/poke" method = "post">
-                  {% csrf_token %}
-        <input type="hidden" name="user" value="{{ user.id }}">
-        <input type="hidden" name="userpoked" value="{{ user2.id }}">            
-        <input type="submit" name="poke" value="poke">
+            {% csrf_token %}
+            <input type="hidden" name="poked" value="{{ user1.id }}">            
+            <input type="submit" name="poke" value="poke">
+        </form>
     </td>
   </tr>
   {% endfor %}

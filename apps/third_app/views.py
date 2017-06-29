@@ -1,6 +1,7 @@
 
 from django.shortcuts import render, HttpResponse, redirect
 from .models import User, Poke
+from django.db.models import Count
 from django.contrib import messages
 import bcrypt
 
@@ -10,20 +11,29 @@ EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 
 def index(request):
-        # User.objects.all().delete()
-        Poke.objects.all().delete()
+        
         return render(request, "third_app/index.html")
 
 def newuser(request):
         if 'id' in request.session:
                 # Poke.objects.all().delete()
+                user_id = int(request.session['id'])
+               
+                been_poked = Poke.objects.annotate(Count("poker__id")).filter(poked__id = user_id)
+
+                poked_num = Poke.objects.values("poker__first_name", "poker__last_name").annotate(total=Count("poker")).order_by('total').filter(poked__id = user_id)
+ 
                 context = {
                         "user" : User.objects.get(id = request.session['id']), 
-                        "users": User.objects.all(),
-                        "pokes": Poke.objects.all()
+                        "users": User.objects.all().exclude(id = user_id),
+                        "pokes": Poke.objects.all(),
+                        "been_poked": been_poked,
                         
+                        
+                        "poked_num" : poked_num
+
                 }
-                print request.session['id']
+                # print request.session['id']
                 return render(request, "third_app/newuser.html", context)
 
                 print users
@@ -55,8 +65,11 @@ def val(request):
 def poke(request):
         if request.method == "POST":
                 user = User.objects.get(id = request.session['id'])
-                userpoked = request.POST['userpoked']
-                poke = Poke.objects.create(user = User.objects.get(id = request.session['id']), userpoked = User.objects.get(id = request.POST['userpoked']))
+                userpoked = int(request.POST['poked'])
+                pokeduser = User.objects.get(id = userpoked)
+                print user.first_name
+                print userpoked, pokeduser.first_name
+                poke = Poke.objects.create(poker = user, poked = pokeduser)
                 return redirect ('/newuser')
 def logout(request):
         if request.method == "POST":

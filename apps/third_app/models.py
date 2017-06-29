@@ -63,9 +63,8 @@ class User(models.Model):
 #         poke = Poke.objects.create(user = User.objects.get(id = post['user']), userpoked = User.objects.get(id = post['userpoked']))
 #         return {"status": True, "data": poke}
 class Poke(models.Model):
-   
-    user = models.ForeignKey(User, related_name="poker")
-    userpoked = models.ForeignKey(User, related_name="poked")
-    
+    # pokes = models.IntegerField(default=1)
+    poker = models.ForeignKey(User, related_name="poker")
+    poked = models.ForeignKey(User, related_name="poked")
     added = models.DateTimeField(auto_now = True)
     # objects = PokeManager()
