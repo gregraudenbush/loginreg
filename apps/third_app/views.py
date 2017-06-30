@@ -23,14 +23,15 @@ def addquote(request):
                 # been_poked = Poke.objects.annotate(Count("poker__id")).filter(poked__id = user_id)
 
                 # poked_num = Poke.objects.values("poker__first_name", "poker__last_name").annotate(total=Count("poker")).order_by('total').filter(poked__id = user_id)
-                
+                # "quotes" : Quote.objects.all().exclude(quote1 = Favorite.objects.get(quote__quote = quote__quote1))
                 
                 
                 favorite_id = Favorite.objects.values("quote__id").values("quote")
 
+
                 context = {
                         "user" : User.objects.get(id = request.session['id']), 
-                        "quotes" : Quote.objects.all().exclude(quote1 = Favorite.objects.values("quote")),
+                        "quotes" : Quote.objects.all().exclude(id = Favorite.objects.all().values("quote__id")),
                         "favorites" : Favorite.objects.filter(user = User.objects.get(id = request.session['id'])),
                         "user_id" : int(request.session['id'])
                 }
@@ -90,12 +91,14 @@ def favorite(request):
 
         if request.method == "POST":
                 Favorite.objects.create(quote = Quote.objects.get(id = request.POST['quote_id']), user = User.objects.get(id = request.session['id']))
+                
         return redirect ('/addquote')
 
 def removefavorite(request):
         
         if request.method == "POST":
                 Favorite.objects.get(id = request.POST['id']).delete()
+                
         return redirect ('/addquote')  
 
 def user (request, id):
