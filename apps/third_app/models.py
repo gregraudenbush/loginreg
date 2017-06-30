@@ -58,13 +58,27 @@ class User(models.Model):
     added = models.DateTimeField(auto_now = True)
     objects = UserManager()
 
-# class PokeManager(models.Manager):
-#     def poking(self, post):
-#         poke = Poke.objects.create(user = User.objects.get(id = post['user']), userpoked = User.objects.get(id = post['userpoked']))
-#         return {"status": True, "data": poke}
-class Poke(models.Model):
-    # pokes = models.IntegerField(default=1)
-    poker = models.ForeignKey(User, related_name="poker")
-    poked = models.ForeignKey(User, related_name="poked")
-    added = models.DateTimeField(auto_now = True)
-    # objects = PokeManager()
+class QuoteManager(models.Manager):
+    # def add(self, post):
+    #     errors = []
+    #     user = ""
+    #     if len(post['quote']) < 1 or len(post['author']) < 1:
+    #         errors.append("Please Complete The Form")
+    #         return {"status": False, "data": errors}
+    #     else:    
+    #         quote = Quote.objects.create(id = User.objects.get(id = post['user']), quote = post['quote'])
+    #         return {"status": True, "data": user}
+    pass
+class Quote(models.Model):
+    user = models.ForeignKey(User, related_name="poker")
+    quote1 = models.CharField(max_length=255, default = "")
+    author = models.CharField(max_length=255, default = "")
+    created_at = models.DateTimeField(auto_now = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    objects = QuoteManager()
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, related_name="user")
+    quote = models.ForeignKey(Quote, related_name="quote") 
+    created_at = models.DateTimeField(auto_now = True)
+    updated_at = models.DateTimeField(auto_now = True)

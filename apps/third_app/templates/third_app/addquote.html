@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link href="css/style.css" rel="stylesheet">-->
+    <style>
+    body {
+        background-color: linen;
+    }
+    .div3{
+        display: inline-block;
+        
+        vertical-align: top;
+        width: 1000px;
+
+    }
+    .div1 {
+        float: left;
+        border-style: solid;
+        width: 300px;
+        padding-left: 10px;
+        margin: 5px;
+    }
+    .div2 {
+        
+        
+        /*float: right;*/
+        border-style: solid;
+        width: 300px;
+        padding-left: 10px;
+        margin-left: 500px;
+    }
+    h1 {
+        color: maroon;
+        margin-left: 40px;
+    } 
+    </style>
+    
+
+  </head>
+  <body>
+    <h2>Welcome {{ user.first_name }}</h2>
+
+      <form action='/logout' method='POST'>
+        {% csrf_token %}
+          <input type="submit" value="Logout">
+      </form>
+
+    <h1>Contribute a Quote</h1>
+
+
+        {% if messages %}
+            {% for message in messages %}
+                <h2>{{ message }}</h2>
+            {% endfor %}   
+        {% endif %}
+
+
+        <form action='/add' method='POST'>
+          {% csrf_token %}
+
+              <label for="">Author</label><br>
+                  <input type="text" name="author"><br> <br>
+              
+              <label for="">Quote</label><br><br>
+                  <textarea name="quote1" rows="4" cols="60">
+                  </textarea><br><br>
+              <input type="hidden" name="user" value=" {{ user_id }}">
+
+              <input type="submit" value="Add Quote!">
+        </form>
+
+        <div class="div1">
+          <h2> Quotable Quotes </h2>
+
+          {% for i in quotes %}
+
+            <p>{{ i.quote1 }}</p>
+            <p> -{{ i.author }}</p>
+            <p>Posted by <a href="/user/{{i.user.id}}">{{i.user.first_name}} {{i.user.last_name}}</a>
+              </p>
+            <form action="/favorite" method = "post">
+                {% csrf_token %}
+                <input type="hidden" name="quote_id" value="{{ i.id }}">            -->
+                <input type="submit" name="favorite" value="Add To My List">
+            </form>
+
+          {% endfor %}     
+        </div> 
+        
+        <div class="div2"> 
+          <h2> My Favorites </h2>
+          {% for i in favorites %}
+            <p>{{ i.quote.quote1 }}</p> 
+              <p> -{{ i.quote.author }}</p>
+              <!--<p>Posted by {{i.user.first_name}} {{i.user.last_name}}</p>-->
+              
+              <form action="/removefavorite" method = "post">
+                  {% csrf_token %}
+                  <input type="hidden" name="quote_id" value="{{ i.quote1.id }}">
+                  <input type="hidden" name="id" value="{{ i.id }}">           -->
+                  <input type="submit" name="favorite" value="Remove from My List">
+              </form>
+            {% endfor %} 
+        </div>  
+  </body>
+</html>

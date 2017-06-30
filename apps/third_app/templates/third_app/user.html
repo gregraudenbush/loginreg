@@ -1,0 +1,59 @@
+<html>
+<head>
+    <style>
+    body {
+        background-color: linen;
+    }
+    .div3{
+        display: inline-block;
+        
+        vertical-align: top;
+        width: 1000px;
+
+    }
+    .div1 {
+        float: left;
+        border-style: solid;
+        width: 300px;
+        padding-left: 10px;
+        margin: 5px;
+    }
+    .div2 {
+        
+        
+        float: right;
+        border-style: solid;
+        width: 300px;
+        padding-left: 10px;
+        margin-left: 500px;
+    }
+    h1 {
+        color: maroon;
+        
+    } 
+    </style>
+</head>
+<body>
+  <form action='/logout' method='POST'>
+        {% csrf_token %}
+          <input type="submit" value="Logout">
+      </form>
+      <a href="/addquote">Dashboard</a>
+
+
+
+
+      <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+      <h1>{{ user.email }}</h1>
+      <h1>Count: {{ count }}</h1>
+
+      {% for i in quotes %}
+          <p>{{ i.quote1 }}</p>
+          <p>-{{ i.author }}</p>
+
+
+      {% endfor %}
+
+
+
+</body>
